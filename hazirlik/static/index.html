@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dedplay Hazırlık</title>
+<link rel="icon" href="/simge.png">
+<style>
+:root{--bg:#f6f4ef;--kart:#fff;--yazi:#1f2328;--soluk:#6b6f76;--cizgi:#e3dfd6;--ana:#2f6f5e;--ana2:#e5f0ec;--uyari:#b54708;--hata:#b42318;--hazir:#1a7f37}
+@media (prefers-color-scheme:dark){:root{--bg:#16181b;--kart:#1f2226;--yazi:#e8e6e3;--soluk:#9aa0a6;--cizgi:#33373c;--ana:#5fb39b;--ana2:#1f3a33;--uyari:#f5a35c;--hata:#f97066;--hazir:#4ac26b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--yazi);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:10px}
+h1{font-size:22px;margin:0}
+.alt{color:var(--soluk);font-size:13px}
+.bosluk{flex:1}
+button{font:inherit;border:1px solid var(--cizgi);background:var(--kart);color:var(--yazi);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--ana)}
+button.ana{background:var(--ana);border-color:var(--ana);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+.kart{background:var(--kart);border:1px solid var(--cizgi);border-radius:12px;padding:16px;margin-top:16px}
+#birak{border:2px dashed var(--cizgi);border-radius:12px;padding:26px 16px;text-align:center;transition:.15s}
+#birak.ustunde{border-color:var(--ana);background:var(--ana2)}
+#birak b{font-size:17px}
+.satir{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kitap{border-top:1px solid var(--cizgi);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.kitap:first-child{border-top:0}
+.kitap .ad{font-weight:600;word-break:break-word}
+.rozet{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--ana2);color:var(--ana);margin-right:6px}
+.rozet.hazir{color:var(--hazir)} .rozet.hata{color:var(--hata)} .rozet.sirada{color:var(--soluk);background:transparent;border:1px solid var(--cizgi)}
+.cubuk{height:6px;background:var(--cizgi);border-radius:9px;overflow:hidden;margin-top:6px;max-width:420px}
+.cubuk i{display:block;height:100%;background:var(--ana);width:0}
+.dugmeler{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start}
+.dugmeler button{padding:4px 10px;font-size:13px}
+.hata{color:var(--hata)}
+a{color:var(--ana)}
+pre{white-space:pre-wrap;word-break:break-word;font:12.5px/1.5 ui-monospace,Menlo,monospace;margin:0}
+dialog{border:1px solid var(--cizgi);border-radius:12px;background:var(--kart);color:var(--yazi);width:min(900px,94vw);max-height:86vh;padding:0}
+dialog::backdrop{background:#0007}
+dialog .ust{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--cizgi);position:sticky;top:0;background:var(--kart)}
+dialog .ic{padding:14px;overflow:auto;max-height:calc(86vh - 52px)}
+details summary{cursor:pointer;font-weight:600}
+label{font-size:13px;color:var(--soluk)}
+input[type=number],select{font:inherit;padding:4px 6px;border:1px solid var(--cizgi);border-radius:6px;background:var(--bg);color:var(--yazi)}
+input[type=number]{width:80px}
+@media (max-width:640px){.kitap{grid-template-columns:1fr}.dugmeler{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <img src="/simge.png" alt="" onerror="this.style.display='none'">
+  <div><h1>Dedplay Hazırlık</h1><div class="alt" id="surum">…</div></div>
+  <div class="bosluk"></div>
+  <button onclick="klasor('gelen')">Gelen</button>
+  <button onclick="klasor('temiz')">Temiz EPUB'lar</button>
+  <button onclick="klasor('rapor')">Raporlar</button>
+  <button id="guncelleBtn" onclick="guncelle()">Güncelle</button>
+</header>
+<div class="alt" id="guncelleMesaj" style="margin-top:6px"></div>
+
+<section class="kart">
+  <div id="birak">
+    <b>Kitap ya da klasör sürükleyip buraya bırak</b>
+    <div class="alt" style="margin:6px 0 12px">PDF, EPUB, DOCX, TXT · bir klasör bırakırsan içindeki bütün kitaplar sıraya girer ·
+      ya da dosyaları doğrudan <a href="#" onclick="klasor('gelen');return false">Gelen</a> klasörüne koy</div>
+    <div class="satir" style="justify-content:center">
+      <button class="ana" onclick="document.getElementById('dosyaSec').click()">Dosya seç</button>
+      <button onclick="document.getElementById('klasorSec').click()">Klasör seç</button>
+    </div>
+    <input type="file" id="dosyaSec" multiple accept=".pdf,.epub,.docx,.txt" hidden>
+    <input type="file" id="klasorSec" webkitdirectory hidden>
+    <div class="alt" id="yuklemeMesaj" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section class="kart">
+  <div class="satir"><b>Kitaplar</b><span class="alt" id="ozet"></span></div>
+  <div id="liste" style="margin-top:8px"><div class="alt">Yükleniyor…</div></div>
+</section>
+
+<section class="kart">
+  <details id="olcumKutu">
+    <summary>Hız ölçümü (Surya OCR, bu Mac)</summary>
+    <p class="alt">Seçilen PDF'in sayfaları önbelleksiz okunur; süre ölçülür ve sunucunun aynı sayfalardaki okumasıyla
+      (varsa ~/Dedplay/dokum_*.tgz kaydı) karşılaştırılır. Sonuç Raporlar klasörüne de yazılır. Kitap işlenirken sıra bekler.</p>
+    <div class="satir">
+      <label>Kitap <select id="olcumKitap"></select></label>
+      <label>İlk sayfa <input type="number" id="olcumIlk" value="100" min="1"></label>
+      <label>Sayfa (ekran kartı) <input type="number" id="olcumAdet" value="50" min="4" max="200"></label>
+      <label>Sayfa (işlemci) <input type="number" id="olcumCpu" value="8" min="0" max="50"></label>
+      <button class="ana" id="olcumBtn" onclick="olcumBaslat()">Ölçümü başlat</button>
+    </div>
+    <div class="alt" id="olcumMesaj" style="margin-top:8px"></div>
+    <pre id="olcumSonuc" style="margin-top:8px"></pre>
+  </details>
+</section>
+</main>
+
+<dialog id="pencere"><div class="ust"><b id="pencereBaslik"></b><div class="bosluk"></div><button onclick="pencere.close()">Kapat</button></div>
+  <div class="ic"><pre id="pencereIcerik"></pre></div></dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+let son = null, yukleniyor = 0;
+
+async function api(yol, govde) {
+  const r = await fetch(yol, govde ? {method: "POST", body: govde} : {cache: "no-store"});
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error((j && j.hata) || r.statusText);
+  return j;
+}
+const post = (yol, govde) => api(yol, govde || new FormData());
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+function asama(k) {
+  if (k.asama === "hazir") return `<span class="rozet hazir">Hazır</span>`;
+  if (k.asama === "hata") return `<span class="rozet hata">Hata</span>`;
+  if (k.asama === "sirada") return `<span class="rozet sirada">Sırada</span>`;
+  if (k.ilerleme) return `<span class="rozet">OCR ${k.ilerleme[0]}/${k.ilerleme[1]}</span>`;
+  return `<span class="rozet">İşleniyor</span>`;
+}
+function sure(sn) { if (sn == null) return ""; sn = Math.round(sn); return sn < 90 ? `${sn} sn` : sn < 5400 ? `${Math.round(sn / 60)} dk` : `${(sn / 3600).toFixed(1)} sa`; }
+
+function ciz(d) {
+  son = d;
+  $("surum").textContent = `sürüm ${d.surum} · Stüdyo kodu ${d.studyo_surum}${d.studyo_commit ? " (" + d.studyo_commit + ")" : ""} · OCR aygıtı: ${d.aygit === "mps" ? "ekran kartı (MPS)" : "işlemci"}`;
+  const g = d.guncelleme || {};
+  $("guncelleMesaj").textContent = g.mesaj || "";
+  $("guncelleMesaj").className = g.durum === "hata" ? "alt hata" : "alt";
+  $("guncelleBtn").disabled = g.durum === "calisiyor" || g.durum === "yeniden";
+  const ks = d.kitaplar;
+  const say = a => ks.filter(k => k.asama === a).length;
+  $("ozet").textContent = ks.length ? ` · ${ks.length} kitap: ${say("hazir")} hazır, ${say("isleniyor")} işleniyor, ${say("sirada")} sırada${say("hata") ? ", " + say("hata") + " hata" : ""}` : "";
+  $("liste").innerHTML = ks.length ? ks.map(k => {
+    const yuzde = k.ilerleme ? Math.round(100 * k.ilerleme[0] / k.ilerleme[1]) : null;
+    const gecen = k.asama === "isleniyor" && k.basladi ? " · " + sure(Date.now() / 1000 - k.basladi) : "";
+    const oz = k.ozet ? ` · ` + (k.ozet.sayfa ? `${k.ozet.sayfa} sayfa (OCR ${k.ozet.ocr_sayfa || 0}), ` : "") + `${k.ozet.baslik} başlık, ${k.ozet.paragraf} paragraf, ${k.ozet.dipnot} dipnot` : "";
+    const den = k.denetim && k.denetim.hata != null ? ` · epubcheck: ${k.denetim.hata} hata` : "";
+    return `<div class="kitap">
+      <div><div class="ad">${esc(k.baslik ? k.baslik + (k.yazar ? " — " + k.yazar : "") : k.ad)}</div>
+        <div class="alt">${asama(k)}${esc(["hazir", "hata"].includes(k.asama) ? "" : k.mesaj || "")}${gecen}${k.asama === "hazir" ? " " + sure(k.sure) + oz + den : ""}</div>
+        ${k.baslik ? `<div class="alt">${esc(k.ad)}</div>` : ""}
+        ${yuzde != null && k.asama === "isleniyor" ? `<div class="cubuk"><i style="width:${yuzde}%"></i></div>` : ""}
+        ${k.hata ? `<div class="alt hata">${esc(k.hata)}</div>` : ""}</div>
+      <div class="dugmeler">
+        <button class="ana" ${k.asama === "hazir" ? "" : "disabled"} onclick="ac('${k.kid}')">Aç</button>
+        <button ${k.asama === "hazir" || k.asama === "hata" ? "" : "disabled"} onclick="rapor('${k.kid}')">Rapor</button>
+        <button disabled title="Sonraki sürümde">Stüdyo'ya gönder</button>
+        <button ${d.mac ? "" : "disabled"} onclick="goster('${k.kid}')" title="Finder'da göster">Finder</button>
+        <button ${k.asama === "isleniyor" ? "disabled" : ""} onclick="yeniden('${k.kid}')">Yeniden işle</button>
+        <button ${k.asama === "isleniyor" ? "disabled" : ""} onclick="kaldir('${k.kid}', this)" title="Listeden çıkar (dosyalar silinmez)">×</button>
+      </div></div>`;
+  }).join("") : `<div class="alt">Henüz kitap yok. Yukarıya bir PDF bırak.</div>`;
+  // ölçüm
+  const sec = $("olcumKitap"), secili = sec.value;
+  const pdfler = ks.filter(k => k.yol && k.yol.toLowerCase().endsWith(".pdf"));
+  const yeni = pdfler.map(k => `<option value="${k.kid}">${esc(k.ad)}</option>`).join("");
+  if (sec.dataset.html !== yeni) { sec.innerHTML = yeni; sec.dataset.html = yeni; if (secili) sec.value = secili; }
+  const o = d.olcum || {};
+  $("olcumMesaj").textContent = o.durum ? (o.mesaj || "") + (o.dosya ? " · " + o.dosya : "") : (pdfler.length ? "" : "Ölçüm için önce bir PDF kitap ekle.");
+  $("olcumBtn").disabled = !pdfler.length || o.durum === "sirada" || o.durum === "calisiyor";
+  $("olcumSonuc").textContent = o.metin || "";
+}
+
+async function yenile() {
+  try { ciz(await api("/api/durum")); }
+  catch (e) { $("guncelleMesaj").textContent = "Uygulamaya ulaşılamıyor (yeniden başlıyor olabilir)…"; }
+}
+setInterval(yenile, 2000); yenile();
+
+async function islem(f) { try { await f(); } catch (e) { alert(e.message); } yenile(); }
+const ac = kid => islem(() => post(`/api/kitap/${kid}/ac`));
+const goster = kid => islem(() => post(`/api/kitap/${kid}/goster`));
+const yeniden = kid => islem(() => post(`/api/kitap/${kid}/yeniden`));
+const klasor = ad => islem(() => post(`/api/klasor/${ad}`));
+function kaldir(kid) { if (confirm("Kitap listeden çıkarılsın mı? (Gelen, Temiz ve Rapor klasörlerindeki dosyalar silinmez)")) islem(() => post(`/api/kitap/${kid}/kaldir`)); }
+function guncelle() { if (confirm("Uygulama ve Stüdyo kodu güncellensin mi? İşlenen kitap varsa bitince yeniden başlar.")) islem(() => post("/api/guncelle")); }
+async function rapor(kid) {
+  const k = son.kitaplar.find(x => x.kid === kid);
+  $("pencereBaslik").textContent = "Rapor — " + (k.baslik || k.ad);
+  $("pencereIcerik").textContent = "Yükleniyor…"; $("pencere").showModal();
+  const r = await fetch(`/api/kitap/${kid}/rapor`);
+  $("pencereIcerik").textContent = await r.text();
+}
+function olcumBaslat() {
+  const f = new FormData();
+  f.append("kid", $("olcumKitap").value); f.append("ilk", $("olcumIlk").value);
+  f.append("adet", $("olcumAdet").value); f.append("cpu_adet", $("olcumCpu").value);
+  islem(() => post("/api/olcum", f));
+}
+
+// ---- yükleme: dosya ya da klasör (alt klasörleriyle)
+const UZ = /\.(pdf|epub|docx|txt)$/i;
+async function yukle(liste) {
+  liste = liste.filter(([f]) => UZ.test(f.name));
+  if (!liste.length) { $("yuklemeMesaj").textContent = "Desteklenen kitap dosyası yok (PDF, EPUB, DOCX, TXT)."; return; }
+  let i = 0, zaten = 0;
+  for (const [f, yol] of liste) {
+    i++; $("yuklemeMesaj").textContent = `Ekleniyor ${i}/${liste.length}: ${yol}`;
+    const fd = new FormData(); fd.append("dosya", f, f.name); fd.append("yol", yol);
+    try { const j = await post("/api/yukle", fd); if (j.zaten_var) zaten++; }
+    catch (e) { $("yuklemeMesaj").textContent = `Hata (${yol}): ${e.message}`; return; }
+  }
+  $("yuklemeMesaj").textContent = `${liste.length} dosya eklendi` + (zaten ? ` (${zaten} tanesi zaten listedeydi)` : "") + ".";
+  yenile();
+}
+function girdiOku(giris, yol) {
+  return new Promise(coz => {
+    if (giris.isFile) giris.file(f => coz([[f, yol + f.name]]), () => coz([]));
+    else if (giris.isDirectory) {
+      const okuyucu = giris.createReader(), hepsi = [];
+      const oku = () => okuyucu.readEntries(async g => {
+        if (!g.length) { const alt = await Promise.all(hepsi.map(e => girdiOku(e, yol + giris.name + "/"))); coz(alt.flat()); }
+        else { hepsi.push(...g.filter(e => !e.name.startsWith("."))); oku(); }
+      }, () => coz([]));
+      oku();
+    } else coz([]);
+  });
+}
+const b = $("birak");
+["dragenter", "dragover"].forEach(o => document.addEventListener(o, e => { e.preventDefault(); b.classList.add("ustunde"); }));
+["dragleave", "drop"].forEach(o => document.addEventListener(o, e => { e.preventDefault(); if (o === "drop" || e.target === document.documentElement) b.classList.remove("ustunde"); }));
+document.addEventListener("drop", async e => {
+  const girdiler = [...e.dataTransfer.items].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  const liste = girdiler.length ? (await Promise.all(girdiler.map(g => girdiOku(g, "")))).flat()
+                                : [...e.dataTransfer.files].map(f => [f, f.name]);
+  yukle(liste);
+});
+$("dosyaSec").onchange = e => { yukle([...e.target.files].map(f => [f, f.name])); e.target.value = ""; };
+$("klasorSec").onchange = e => { yukle([...e.target.files].map(f => [f, f.webkitRelativePath || f.name])); e.target.value = ""; };
+</script>
+</body>
+</html>
